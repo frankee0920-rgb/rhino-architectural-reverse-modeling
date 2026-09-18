@@ -1,14 +1,19 @@
 # Checks
 
-**Version 0.6**
+**Version 0.7**
 
-Executable tests. Each one can fail. Each caught, or would have caught, a real
-production error.
+Scope: select methods relevant to a measurement question. R1/R3 refer to the
+topics in `strict-review.md`; they do not mandate a full evidence pipeline.
+SKILL.md permits stated reasonable inference and user-agreed provisional scale.
+User-given dimensions are evidence, not an absent image signal.
+
+Use these diagnostics when a consequential reading is uncertain. They are not
+prerequisites for every image or drawing; a trustworthy source can be sufficient.
 
 Precision is not accuracy. A reading can be measured to sub-pixel precision and
 still be wrong, and every later step inherits it.
 
-# 1. Impossibility checks — run before building on a reading
+# 1. Diagnostics for uncertain geometric readings
 
 ## 1.1 Convex visibility
 A convex volume cannot show two opposite side faces from one camera.
@@ -38,13 +43,14 @@ constrains that element and says nothing about the facade behind it.
 Equally spaced collinear points satisfy `1/(x − x_v)` linear in index `n`, for
 vanishing point `x_v`.
 
-Fit it. Residual well under 1 px proves the points are a genuinely equally spaced
-structural rhythm — and the fit then extrapolates reliably to members hidden
-behind trees and to the face edges.
+Fit it when equal-spacing interpretation is uncertain. A small residual supports
+that reading within image resolution, but does not prove architectural identity
+or uniquely establish hidden members. Check the detected boundaries and
+independent contextual evidence before extrapolating.
 
-*This is the highest-value measurement in the whole toolkit.* It converted a
+*One recorded application:* it converted a
 receding facade into an exact bay count (11 piers, rms 0.23 px), which turned a
-fabricated building depth into a measured one. Use it before counting bays by eye.
+fabricated building depth into a measured one. Use it where perspective makes bay counting ambiguous.
 
 ## 1.4 Horizon consistency
 For a horizontal plane at image row `y_f` receding to `y_b`:
@@ -57,7 +63,8 @@ Solving `y_h` from two rows and then reporting the depth is circular. Measure
 three or more rows and test whether one `(y_h, D)` fits them all.
 
 If the implied horizon falls below the ground line, or implies a camera below
-ground level, **the reading is wrong, not the horizon.**
+ground level, recheck the geometric reading, datum selection and camera assumptions; the
+formula only applies under its stated configuration.
 
 ## 1.5 Closure
 `sum(parts) == measured overall`. Report the residual in mm and px.
@@ -93,9 +100,11 @@ A ratio carries no scale. It survives an unknown camera distance and an unknown
 reproduction scale, so it tests the one thing a shared scale factor cannot hide:
 whether the two sources agree about the building's *proportions*.
 
-Above 3%, one source is anisotropic (§5.1) or one datum is contaminated (§3). Do
-not derive a level, a storey height or a setting-out dimension from either until
-it is resolved, and do not average (§2).
+A material disagreement calls for checking anisotropic scaling (§5.1), datum
+contamination (§3), perspective and source differences. The historical 3% alarm
+is not a universal tolerance: judge against source uncertainty and the affected
+feature. Resolve consequential conflicts before using them; do not average
+contradictory readings (§2).
 
 *Production failure:* box height had three agreeing signals, the grid three, the
 window head four inside 28 mm, and the dimension chain closed to 15 mm. The
@@ -105,27 +114,23 @@ ratio to be computed. Every gate was green.
 
 ### When there is only one source
 
-Often there is one image and nothing else. Then this check cannot run — which is
-a state to declare, not a step to skip:
+With one source, use supported measurements and state consequential limits;
+do not claim independent confirmation or require a second source merely to
+complete this diagnostic. Unknown absolute scale follows SKILL.md. Check the
+measurement plane where perspective affects the result (§4.1).
 
-- the scale transfer is **unverified**, and every dimension derived through it
-  inherits that;
-- the absolute anchor has no second opinion. R1 applies: ask;
-- §4.1 matters more, not less. With one camera, every quantity depends on
-  correctly classifying which plane each measured point lies in.
+# 2. Independent cross-checks
 
-Say it in one line. A single-source chain left unlabelled reads as measured.
+Use an additional signal when a consequential reading is uncertain and suitable
+evidence exists. A supplied dimension or a defensible single-source measurement
+can be used with its source and limits; do not claim independent confirmation.
+Unknown absolute scale follows R1. Independence requires different failure
+causes: two measurements of the same edge with the same detector are one signal.
 
-# 2. Two-signal rule
+Potential independent pairs (check shared assumptions before relying on them):
 
-No load-bearing quantity rests on one signal. Two signals must **fail
-differently** — two measurements of the same edge with the same detector are one
-signal.
-
-Independent pairs, by example:
-
-- floor-to-floor from fascia spacing × guard height meeting a code minimum;
-- bay pitch from peak detection × autocorrelation of the same band;
+- floor-to-floor from a dimensioned section × a separately scaled photograph;
+- bay count from a plan × clearly identified facade piers;
 - recess depth from soffit convergence × reveal width — the latter is a pure
   ratio, independent of camera distance, so it survives an unknown `Z`.
 
@@ -232,44 +237,22 @@ used instead. A principal dimension went 200 mm wrong.
 
 # 5. Reference distortion floor
 
-Establish once per reference image: on a facade parallel to the image plane,
-bay-to-bay spacing must be constant. Any systematic drift is the photograph's
-residual lens distortion or a small facade-to-sensor angle — **not building
-geometry**.
-
-Record it in px per bay. It is the accuracy floor for every horizontal
-registration afterwards. Do not chase residuals below it: a rigid uniform model
-cannot fit both the ends and the middle of a distorted photograph, and trying
-will bend a correct grid.
+When a comparison shows unexplained spacing drift, first establish whether the
+actual bays are equally spaced and whether the facade is parallel to the image
+plane. Only then use residual drift to investigate lens distortion, perspective
+or image processing. Real architectural variation remains a possible cause.
+Estimate image uncertainty where it affects a decision; do not deform supported
+geometry to chase residuals below that uncertainty.
 
 ## 5.1 Drawings are not exempt, and they fail differently
 
-A photograph distorts radially, worst at the frame edge. A scanned, re-drawn or
-re-published plan or section can instead be **anisotropic**: uniform within each
-axis, different between them.
-
-Nothing inside the drawing reveals this. Every dimension you read stays
-self-consistent with every other dimension in the same drawing.
-
-Test once per drawing, before reading any dimension from it: take one X-direction
-and one Y-direction dimension that are both known from another source, and
-compare the two implied scales.
-
-If they differ, do not pick one and do not average. Record both, state which
-evidence chain each axis is tied to, and treat any quantity read across the two
-axes as single-signal.
-
-Pick the two known dimensions from **different** evidence chains, and never from
-the comparison you are trying to test. Calibrating one axis against a contaminated
-comparison manufactures anisotropy that is not there.
-
-*Production near-miss:* a section was believed anisotropic by 4.7% and a
-correction was about to be applied to every storey height. Running this test
-properly — horizontal scale from a plan-derived column diameter, vertical scale
-from overall height — returned 209.0 px/m on both axes. The section was uniform.
-The apparent anisotropy was an artefact of having calibrated the vertical axis on
-the very comparison that was in dispute. The test is cheap, and here it prevented
-a wrong correction rather than catching a wrong reading.
+A scanned or republished drawing may have different horizontal and vertical
+scales. Investigate when proportions are suspect or important dimensions conflict,
+not as a prerequisite for reading every drawing. Compare reliable known dimensions
+in both directions, using printed dimensions or independent sources where available.
+Do not calibrate against the disputed measurement itself. A material difference
+calls for checking the source and scales before correction; missing cross-checks
+limit confidence but do not automatically invalidate usable evidence.
 
 # 6. Multi-image identity
 

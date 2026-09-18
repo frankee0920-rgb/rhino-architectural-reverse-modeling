@@ -1,9 +1,15 @@
 # Tooling
 
-**Version 0.8**
+**Rhino execution reference — revised 2026-09-10**
 
-What the execution layer can and cannot do, the traps it hides, and the recipes
-that survive them. Nothing here is procedure.
+SKILL.md defines outcomes and scope. Read relevant sections when a Rhino
+operation needs them; this reference does not add a mandatory review process. Photo-specific camera
+recipes apply only when a photo is being matched. For oral modelling choose a
+usable design view rather than inventing a reference station point.
+
+Consult the relevant symptom or operation only. Recorded behavior depends on the
+Rhino version and environment; discover current tools and display identifiers
+rather than treating historical examples as installed configuration.
 
 # 1. Helper tools
 
@@ -12,10 +18,12 @@ that survive them. Nothing here is procedure.
 | `tools/reference_prep.py` | source metadata, FAR image, MID grid crops, custom NEAR crops |
 | `tools/compare_views.py` | normalized pair, side-by-side, 50% overlay, abs difference, edge maps, metrics JSON |
 | `tools/register_capture.py` | register a capture on visible features **and detect scale drift** |
-| `tools/review_packet.py` | machine-readable packet for the reviewer |
+| `tools/review_packet.py` | optional evidence packet by `--purpose`; legacy gate/level arguments remain accepted |
 
-Prose is not measurement. Anything claimed as measured must come from a script
-whose output can be re-run.
+Distinguish user-given dimensions, native geometry queries, image measurements
+and estimates. If a claim depends on a computed image measurement, retain its
+reproducible calculation; ordinary modelling does not need a new script to
+re-prove a supplied dimension or a direct application query.
 
 # 2. Rhino MCP capability boundary
 
@@ -40,10 +48,34 @@ whose output can be re-run.
 Look up RhinoScript documentation (`get_rhinoscript_docs`) before writing Python.
 Do not guess signatures.
 
-Original creation parameters are **not** recoverable from geometry. If you want a
-later session to know them, write them as object user strings.
+Original creation parameters may not be recoverable from final geometry alone.
+Preserve useful controls, for example in object user strings, native control
+geometry or a parameter file, and identify them for the next session.
 
 # 3. Capture
+
+## Verify the live document and render path early
+
+In a new or changed execution environment, use existing or small representative
+geometry to verify the MCP-connected document, material assignment, saved view
+and actual image output. Reuse an unchanged, verified setup. With multiple Rhino instances, compare the connected document path
+and process with the intended visible document; do not assume they are the same.
+After reconnecting or opening a different file, check again before mutating it.
+
+In the observed Rhino 8 environment, hidden-window captures sometimes returned
+stale display content. Inspect the actual image and use the intended visible
+window when the render pipeline is not updating. A successful capture call is
+not evidence that the requested mode rendered. Native `_SetDisplayMode` can be
+needed to switch the active pipeline; assigning a viewport display property alone
+may not suffice. Save a checkpoint and leave Raytraced mode before substantial
+geometry or material edits; live raytraced updates have stalled this workflow.
+
+When material names acquire automatic numeric suffixes, name-only matching can
+miss assignments. Prefer stable material references or semantic identifiers;
+inspect representative objects after assignment. Native PBR content created with
+`PhysicallyBasedMaterialType` retained PBR fields in the observed environment;
+conversion through legacy/basic material paths did not. Verify actual content
+and render appearance rather than relying on the material's label.
 
 ## Use this
 
@@ -53,13 +85,13 @@ later session to know them, write them as object user strings.
   _TransparentBackground=_No "<absolute path>" _Enter
 ```
 
-## Do not use `CreatePreviewImage`
+## Blank captures
 
-v0.3 specified it as the durable-file adapter and recorded it as verified. In
-later sessions it produced **an all-white image at one size and an all-black image
-at another** — silently, with `success=True` and a plausible file size.
+`CreatePreviewImage` returned all-white or all-black images in observed sessions
+despite reporting success. Prefer the capture command above and inspect its
+actual image before using it as evidence.
 
-## Three traps, all hit in production
+## Camera and capture symptoms
 
 **T1 — `ViewCameraLens` moves the camera.** Setting the lens dollies the camera to
 preserve framing, sometimes drastically. Set **lens first, then camera/target,
@@ -75,19 +107,17 @@ window is resized mid-session, the same lens and the same requested capture size
 produce a different number of pixels per metre, silently invalidating every
 earlier registration.
 
-In production the viewport went 901×551 → 1814×1088 and a correct camera produced
-a mis-registered capture. Time was then wasted "fixing the camera", which was
-never broken.
-
 **T3 — capture width, not lens alone, sets pixel scale.** When solving for a
 framing, fix the capture size first, then calibrate the lens against it.
 
 ## Guard
 
-Run `tools/register_capture.py` on every capture. It measures the building's pixel
-extent, compares it to the expected value, prints a lens correction factor, and
-**refuses to crop on drift**. Never hard-code a crop offset from a previous
-capture.
+When a photo comparison depends on accurate capture scale, `tools/register_capture.py`
+can measure the building's pixel extent against an expected value and refuse
+cropping on drift. Use it or an equivalent check when scale is uncertain; it is
+not required on every capture. Reuse crop offsets only while framing remains
+verified. A reported lens correction is diagnostic, not permission to alter the
+camera automatically.
 
 # 4. Camera — store two separate things
 
@@ -97,28 +127,28 @@ be perfectly stable while every capture from it is unusable.
 ## 4.1 The camera — defined by architectural quantities
 
 ```text
-view_axis:       horizontal   (unless the reference itself shows convergence)
-camera_height:   eye level, 1500-1700 mm
-position:        on the facade's centre-line
-distance:        so the building occupies a similar fraction of frame
-lens:            one measurement, one proportional correction, done
+projection:      infer from perspective/parallelism and available camera evidence
+camera_height:   infer or fit; use eye level only when the reference supports it
+position:        infer from visible faces and spatial relationships
+distance/lens:   fit jointly to supported perspective and framing
+shift/crop:      account for corrected verticals and source framing as needed
 ```
 
-Store as a Named View. Because it is defined by the building, a change in building
-dimensions means the camera is **recomputed** — cheap, normal, not a symptom of
-anything wrong.
+Store as a Named View. Camera and geometry can be ambiguous from one photograph.
+Use source cues and other supported views to separate them. Do not refit the camera
+automatically to make each geometry change look correct; hold it comparable when
+evaluating shape, and revise projection separately when evidence warrants it.
 
 A named view is storage, not state. The camera for the **primary** reference has
 one extra requirement at handover: restore it into the Perspective viewport as
 the last action before saving, so the delivered file opens on it. See
-`SKILL.md` `# DELIVERABLE`. Orbiting after the restore and saving again silently
+`SKILL.md` §交付. Orbiting after the restore and saving again silently
 undoes it — verify by reopening, not by remembering.
 
-**The first line is the only one that really matters.** Architectural photographs
-are usually vertically corrected: verticals parallel, not converging. If the model
-view converges while the reference does not, the two silhouettes cannot be compared
-at all and no framing accuracy repairs it. Everything else is framing, and framing
-may be approximate.
+Match the projection shown by the source. Parallel verticals may indicate
+perspective correction or a shifted view; converging verticals require a matching
+perspective. Camera position and focal length also affect visible depth and
+openings, so matching verticals alone does not establish a valid comparison.
 
 ## 4.2 The capture recipe — defined by pixels
 
@@ -126,89 +156,70 @@ may be approximate.
 capture_width_px:
 capture_height_px:
 lens_at_that_capture_size:
-expected_building_width_px:   <- the check value, verified every time
-crop_offset:                  <- measured every time, never reused
+expected_building_width_px:   <- check when framing/scale changes or is uncertain
+crop_offset:                  <- reuse only while its framing remains verified
 ```
 
-If the check value is off, the viewport or capture size changed (T2/T3), not the
-camera. Fix the recipe; leave the camera alone.
+If the check value changes unexpectedly, inspect viewport/capture size (T2/T3),
+projection and document state before changing the camera or geometry. A mismatch
+alone does not identify its cause.
 
-## 4.3 Shifted lens — required whenever the reference is shifted
+## 4.3 Off-centre framing
 
-If the reference's horizon is not at mid-frame, its principal point is offset: it
-was shot with a rise-shift lens, which is ordinary practice for tall buildings.
-
-**Rhino can reproduce this.** Set an asymmetric frustum — §6.1 has the call and
-the registration arithmetic.
-
-Earlier versions of this file said the opposite: that Rhino could not offset the
-principal point, and that the only faithful emulation was to capture a larger
-frame and crop off-centre. That is wrong, and it was expensive. Capture-and-crop
-reproduces the reference *image* while leaving the delivered *viewport* centred
-on the horizon, so the saved model opens showing the lower half of a tall
-building — every camera check passing, the deliverable unusable. See `SKILL.md`
-`# DELIVERABLE`.
-
-Capture-and-crop remains the right way to pull an exact reference framing out of
-a viewport whose aspect does not match, once the frustum is already correct. What
-it is not is a substitute for the frustum.
-
-For a comparability *check* on its own, accepting the horizon at mid-frame is
-still a legitimate documented simplification. For the **delivered** view it is
-not, because the delivered view has to be looked at.
+An off-centre horizon can result from lens shift, cropping, camera tilt or
+perspective correction. Diagnose the projection rather than assuming a shifted
+lens. When appropriate, Rhino can use an asymmetric frustum; §6.1 provides an
+example. Retain framing settings so the saved view and delivered image agree.
+Cropping may refine framing but does not correct a wrong camera projection.
 
 ## 4.4 Display modes
 
-Geometry review uses one white/clay mode. Query `ViewDisplayModes(True)` and use
-the returned name or id **exactly** — installed names may contain typos. In the
-audited Rhino 8 session the material mode is spelled `Arctic mode with matertial`
-(id `33238429-4ea4-48d1-8443-552fcafe851f`). Do not silently correct it.
-
-Switching geometry → material review changes **Display Mode only**. Compare
-camera, target, up, projection and lens before and after; fail the switch if any
-changed.
+Use a neutral mode to inspect geometry and an appropriate material/render mode
+to inspect appearance. Query installed display modes and use their returned
+names or IDs; historical custom modes are not portable. If a mode switch changes
+framing unexpectedly, inspect camera and viewport state before altering geometry.
+Keep comparable framing while judging material changes.
 
 # 5. Geometry construction rules
 
 The execution layer makes it very easy to produce a correct-looking model that
 cannot be edited. Guard here, not at handover.
 
-- **Name at creation.** Set name and layer in the same operation that creates the
-  object. Naming later does not work — by then the geometry has no element
-  boundaries to name.
-- **Boolean within one component only.** Subtracting many cutters from one block
-  produces a solid in which no architectural element exists as an object. In
-  production this forced a full rebuild on every change, which churned the whole
-  dimension chain.
-- **Verify each component**, not only the assembly: `analyze_objects` for
-  validity, closed-solid state, naked edges, bbox against intent.
+- **Maintain semantic identity.** Naming and assigning layers during creation is
+  a useful default; a reliable batch organization is also valid. Preserve useful
+  component boundaries and editable controls through booleans and joins. A single
+  opaque final solid may force a full rebuild on each user change.
+- **Check meaningful geometry**, not only an assembly bounding box. Use actual
+  queries or batch validation for validity, intended solid/open state, naked edges
+  and dimensions. Inspect representative junctions and suspect operations; no
+  separate report or API call is required for every repeated component.
 - **Batch heavy booleans.** 229 cutters against one solid timed out. Batch, and
   verify after each batch so a failure is localized.
 - **Instance repeated elements** with semantic master names. Never array an
   unverified master.
-- **A block instance does not carry its layer's material.** The geometry inside
-  the block definition keeps the layer it was created on. Setting the
-  *instance's* layer changes nothing about how it renders. Put the master on its
-  target layer **before** defining the block, and check one instance in the
-  material view. In production every mullion in the building rendered in the
-  default layer's material while every instance sat on the correct layer.
-- **A material with a colour and no bitmap fails silently and completely.** The
-  call that creates a layer material and sets its colour, transparency and shine
-  returns success and renders plausibly, and nothing downstream distinguishes it
-  from a finished material. Setting the **bitmap** is a separate call, and it is
-  the one that gets left out. Assert it: read each material back and check it
-  actually carries a texture, rather than trusting the sequence you wrote.
+- **Block material inheritance needs inspection.** Definition geometry can retain
+  its own material/layer source, so changing the instance layer may not change its
+  appearance. Inspect the material source and one actual instance; configure the
+  master or inheritance deliberately. In a recorded failure, mullions retained
+  the default layer material despite correctly organized instance layers.
+- **Material creation does not prove the required pattern exists.** Where a bitmap
+  is needed, verify actual assignment, accessible image and mapping; a successful
+  colour/transparency call does not set the bitmap. Uniform surfaces and native
+  procedural materials are valid when appropriate. Inspect the required surface
+  appearance, not bitmap presence for every material.
 - **A texture with no mapping is not a texture at a known scale.** Without a
   mapping the surface's own parameterization drives the texture, which on a boxy
   Brep differs face to face and cannot be fixed by editing the material. Set an
   explicit mapping — box, cylindrical or spherical to suit the element — and set
   its size in **model units**, so texture scale is a dimension you can measure
   against the reference rather than a slider you nudge.
-- **Store driving parameters as user strings.**
+- **Keep driving parameters recoverable.** User strings, named control geometry,
+  native controls or a concise parameter file are possible mechanisms; choose what
+  supports practical editing and identify the entry point at handover.
 
 # 6. The delivered camera lives in the file, not the session
 
-The handover requirement in `SKILL.md` `# DELIVERABLE` is about the **saved
+The handover requirement in `SKILL.md` §交付 is about the **saved
 file**. Asking the running session what its camera is answers a different
 question, and the two come apart silently.
 
@@ -239,10 +250,10 @@ session.
 
 ## 6.1 Two-point perspective is the mechanism, not a hazard
 
-When the reference photograph has **parallel verticals** — as architectural
-photographs of tall buildings usually do — the projection you need is a two-point
-perspective with a **shifted (asymmetric) frustum**. That is what a rise-shift
-lens is, and Rhino does it.
+Use this recipe when source cues establish a two-point perspective and the
+desired framing requires an asymmetric frustum. Parallel verticals alone do not
+prove a shifted view: distinguish perspective, orthographic views, cropping and
+correction under §4 before selecting the mechanism.
 
 There are two ways to get parallel verticals and they are the same projection:
 
@@ -251,10 +262,10 @@ There are two ways to get parallel verticals and they are the same projection:
   if you never touched the mode;
 - call `vp.ChangeToTwoPointPerspectiveProjection(lens)`.
 
-Neither one alone solves framing. A symmetric frustum centres the frame on the
-horizon, so a tall building is cut off at the top in any ordinary viewport.
-**Shift the frustum.** `RhinoViewport` has no `SetFrustum`, which is the only
-reason this looks harder than it is:
+Projection alone may not solve framing. For a tall building viewed from low
+eye height, the desired frame may extend far above the horizon. When that is
+the diagnosed condition, shift the frustum. The following recipe uses a
+`ViewportInfo` copy to set the required frustum:
 
 Derive the vertical window from the building and the camera. Never carry a
 frustum number over from another job — it encodes that building's height and that
@@ -343,10 +354,11 @@ height.
 
 # 7. Session hygiene
 
-An adapter that worked in a previous session may not work now. At the start of a
-session, before relying on it: create a test box of known dimensions, verify with
-`analyze_objects`, set a camera, capture, and confirm the file has the requested
-dimensions and is not blank.
+An adapter that worked in a previous session may not work now. When its current
+behavior is unknown or suspect, verify the uncertain operation with a small
+reversible example: known geometry for dimensions, or a capture for framing and
+pixel content. Reuse established session evidence instead of repeating a full
+startup ritual. Final rendering and saved-view requirements are in SKILL.md.
 
 A capture adapter can fail while reporting success. Verify the pixels, not the
 return value.

@@ -1,12 +1,10 @@
 # Architectural Construction Logic
 
-Domain knowledge for Mode A, current as of v0.5. These are **general architectural rules**. They
-apply objectively across building types and test cases. They must never be
-rewritten as case-specific exceptions for a single image or benchmark.
-
-This reference has priority over any conflicting element-modeling instruction in
-`SKILL.md`. It does not replace the Large Form → Medium Form → Fine Form
-hierarchy, the review loop, or the independent Reviewer.
+Reusable architectural knowledge. Apply relationships according to the actual
+building type, user intent and scope in SKILL.md. Read the relevant systems;
+the numbered sections organize knowledge, not a mandatory construction sequence.
+There is no required written answer for every component or independent review
+for every operation.
 
 ## 1. Core Principle: Model Architectural Systems, Not Stacked Surfaces
 
@@ -16,7 +14,7 @@ architectural systems.
 The model must not merely reproduce the appearance of the reference image by
 stacking or attaching surfaces.
 
-For every visible architectural element, the Modeler must identify:
+For a system whose role or connections are unclear, reason through:
 
 1. what the element is;
 2. what space or assembly it belongs to;
@@ -26,20 +24,15 @@ For every visible architectural element, the Modeler must identify:
 6. whether it creates an opening, enclosure, support, screen, railing, finish,
    or other architectural function.
 
-A visually similar but architecturally impossible assembly must fail review.
+Correct consequential spatial contradictions even when the assembly looks similar.
 
-**The six questions presuppose that the building's primary systems exist.** Most
-of §2 below is about how an element meets a floor slab, a slab edge, a landing or
-a column. If the model has no slabs and no core, those questions have no
-referents and the reasoning cannot be done at all — it can only be simulated.
-Floor structure and vertical circulation are therefore not detail to be reached
-later; they are the frame the rest of this file hangs on. See `SKILL.md` R7,
-which makes them mandatory under every depth contract, visible or not.
+Represent applicable floor structure and circulation at the agreed scope. Use the
+questions only where a relationship is unclear; no written answers are required.
 
-## 2. Mandatory Architectural Relationship Reasoning
+## 2. Architectural relationships
 
-Before modeling any medium- or fine-scale architectural system, explicitly
-establish its relationship to adjacent systems.
+Understand relevant adjacent systems and represent their spatial relationships.
+Use a short note or a model inspection where needed; no per-system form is required.
 
 Understand and model correctly where applicable:
 
@@ -58,10 +51,10 @@ Understand and model correctly where applicable:
 - roof ↔ wall/parapet;
 - cladding ↔ backing wall/subframe.
 
-These are not optional detailing knowledge. They are basic architectural
-modeling knowledge and must be correct before a model can pass.
+Check the relationships that affect the building being modeled; this list is a
+knowledge reference, not an inspection form.
 
-## 3. Window / Wall Relationship — Hard Rule
+## 3. Window / Wall Relationship
 
 A window is **not a surface pasted onto a wall**.
 
@@ -86,9 +79,7 @@ Forbidden:
 - leaving the wall continuous behind a visible window opening unless the
   reference clearly shows a surface-applied glass assembly.
 
-Reviewer rule: if a visible window/glazing element does not have a valid
-relationship with its wall/opening, classify as
-`CRITICAL_ARCHITECTURAL_RELATIONSHIP_ERROR` and the current Level cannot pass.
+Correct missing openings or misplaced glazing at the controlling assembly.
 
 ## 4. Curtain Wall / Glazing Relationship
 
@@ -129,8 +120,8 @@ as a shorter rectangular surface.
 
 ## 6. Typical Floor Consistency
 
-If the reference clearly indicates repeated typical floors, establish a
-`TYPICAL_FLOOR_SYSTEM` before modeling each floor independently.
+Where typical floors repeat, use shared controls or a repeated system to keep
+their intended relationships consistent while preserving evidenced variations.
 
 The typical-floor system should define, as applicable:
 
@@ -144,42 +135,20 @@ The typical-floor system should define, as applicable:
 - opening positions;
 - major façade module.
 
-Repeated floors must inherit the same base system unless visible evidence shows
-a deliberate variation.
-
-Reviewer must compare repeated floors for:
-
-- inconsistent floor height;
-- inconsistent slab level;
-- inconsistent parapet height;
-- drifting window alignment;
-- changing balcony depth;
-- changing frame width;
-- unexplained module differences.
-
-Any unexplained inconsistency in an obviously repeated typical-floor system is
-at least `MAJOR`. A floor-height error that changes the building's vertical
-rhythm or identity may be `CRITICAL`.
+Where repetition is supported by the sources, investigate unexplained changes in
+levels, alignments, depth or modules. Preserve actual variations rather than
+forcing every floor into the same template.
 
 ## 7. Repetition: Build the Type First, Then Instance
 
-When the reference shows repeated architectural units:
-
-1. identify the repeated type;
-2. model one correct master unit;
-3. verify its geometry and architectural relationships;
-4. convert it to a block/instance or controlled repeated system;
-5. place instances according to the actual reference.
-
-Do not independently rebuild each repeated unit if they are meant to be the
-same. Do not array an incorrect master unit.
-
-The repeated type must pass architectural-relationship checks before
-multiplication.
+Choose a shared generator, instance, modifier or another editable representation
+that suits the repeated system. Check representative geometry and connections
+before expensive multiplication; preserve real variations and exceptions.
+A repeated error should be corrected at its controlling source.
 
 ## 8. Depth Must Be Explicit
 
-At every review gate, Modeler and Reviewer must distinguish:
+When interpreting spatial relationships, distinguish:
 
 - coplanar;
 - recessed;
@@ -195,8 +164,8 @@ plane. Do not approximate a projecting element by changing color only.
 
 ## 9. Junction Check
 
-Perform a `JUNCTION_CHECK` on the generator unit before multiplying it, and
-again across the finished assembly.
+Inspect representative junctions before propagating a system and on the
+resulting assembly. The purpose is correct connections, not a named audit step.
 
 Inspect representative conditions:
 
@@ -216,84 +185,18 @@ that the architectural assembly is spatially and logically valid.
 A model can be visually similar and still fail if the junction logic is
 fundamentally wrong.
 
-## 10. Reviewer Gate — Architectural Relationships
+## 10. Assessment and correction
 
-`ARCHITECTURAL_RELATIONSHIPS: PASS / FAIL` is a mandatory Reviewer hard gate.
+Distinguish fidelity to the sources from construction plausibility. Check the
+actual role, location, count, section, level and connections of relevant elements;
+for circulation, verify endpoints and spatial continuity. Use direct inspection
+or a targeted independent review as appropriate.
 
-The Reviewer must not only ask:
-
-- Does the element exist?
-- Is the size approximately correct?
-- Is the position approximately correct?
-
-The Reviewer must also ask:
-
-- Is it the correct architectural element?
-- Is it connected to the correct adjacent element?
-- Is its depth relationship correct?
-- Does it create a real opening where required?
-- Does it terminate correctly?
-- Is repetition logically consistent?
-- Is the element modeled as a real 3D architectural assembly rather than a
-  pasted surface?
-
-If any high-salience visible element violates basic architectural construction
-logic, set `ARCHITECTURAL_RELATIONSHIPS = FAIL`. The current Level cannot pass.
-
-## 11. Error Categories
-
-- `WRONG_ELEMENT_TYPE`
-- `WRONG_FLOOR_HEIGHT`
-- `TYPICAL_FLOOR_INCONSISTENCY`
-- `INVALID_WINDOW_WALL_RELATIONSHIP`
-- `INVALID_CURTAIN_WALL_RELATIONSHIP`
-- `INVALID_BALCONY_PARAPET_RELATIONSHIP`
-- `INVALID_JUNCTION`
-- `MISSING_OPENING`
-- `PASTED_SURFACE_GEOMETRY`
-- `WRONG_DEPTH_RELATIONSHIP`
-- `UNJUSTIFIED_END_GAP`
-- `REPETITION_SYSTEM_ERROR`
-
-For every such error, the Reviewer must report:
-
-```text
-Severity:
-Error class:
-Reference evidence:
-Model evidence:
-Architectural principle violated:
-Recommended correction:
-```
-
-## 12. Review Priority
-
-### Highest priority
-- overall dimensions;
-- mass hierarchy;
-- floor-count / large vertical rhythm;
-- major voids and setbacks;
-- roof/base relationship.
-
-### Then
-- typical-floor system;
-- architectural depth;
-- balcony/loggia/recess relationships;
-- major openings;
-- structural/façade rhythm;
-- primary junction logic.
-
-### Last
-- windows/doors;
-- curtain-wall subdivisions;
-- railings/screens;
-- detailed component relationships;
-- materials and mapping;
-- fine junctions.
-
-An architectural relationship error found on the generator unit must be fixed on
-the unit, before propagation. It must never be relabelled as later "detail work"
-and multiplied.
+Describe consequential discrepancies in plain language with enough evidence to
+locate and correct them. No error codes, severity tables or pass/fail fields are
+required. Correct repeated errors at their shared control before propagating them.
+Choose priorities by their effect on the building and dependent work, not by a
+fixed sequence of systems.
 
 ## 13. No Visual Cheat Rule
 
@@ -310,7 +213,7 @@ geometry:
 - entourage.
 
 If the reference shows a real recess, opening, slab, railing, wall, or window
-relationship, model it as real geometry at the appropriate Level.
+relationship, model it as real geometry to the detail required by SKILL.md and the user's scope.
 
 ## 14. Objective Adaptability
 

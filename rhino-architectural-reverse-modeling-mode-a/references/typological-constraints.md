@@ -9,18 +9,21 @@ outside a range is a question, not a verdict.
 
 ## 1. Universal scale references
 
-Use these to establish absolute scale when no dimension is given. Prefer the ones
-that are code-bound, because their lower limits are hard.
+Use these as plausibility clues or explicit provisional assumptions, not measured
+absolute anchors. Typical sizes and regulatory minima do not establish the actual
+dimension in a photograph. Obtain a known dimension or user acceptance of a
+provisional scale under SKILL.md. These legacy ranges are not current code advice;
+verify applicable standards separately if compliance is part of the task.
 
 | Element | Range | Note |
 |---|---|---|
 | Person, standing | 1.60–1.85 | |
 | Door leaf height | 2.00–2.10 | head at 2.05–2.15 |
-| Guard / balustrade / parapet | **≥1.05** | China, building ≤24 m; **≥1.10** above 24 m. Code-bound — a strong anchor |
+| Guard / balustrade / parapet | **≥1.05** | Legacy reference: **1.10** also common; verify actual height, never assume a legal minimum equals the built height |
 | Handrail | 0.85–0.95 | |
 | Window sill, habitable | 0.85–1.00 | low sill 0.45–0.60 needs a guard |
 | Stair riser / going | 0.15–0.18 / 0.26–0.30 | |
-| Floor-to-ceiling, residential | ≥2.40 | code minimum |
+| Floor-to-ceiling, residential | 2.40 | legacy plausibility reference; verify actual condition |
 | Floor-to-ceiling, office | 2.60–2.90 | |
 | Car | 4.4–4.9 L × 1.8 W × 1.45 H | |
 | Parking stall | 2.4–2.5 × 5.3 | aisle 5.5–6.0 |
@@ -127,18 +130,19 @@ on the other side of it (double-loaded) or a court/exterior on the other side
 There is no third option in which the space behind the rooms is simply solid.
 
 ### P3. Vertical circulation
-Any building over three storeys needs a stair, and over four to five storeys
-practically needs a lift. Both need a shaft that appears in plan and, usually, on
-some elevation. If nothing in the reading can be a core, part of the plan is
-missing from the reading.
+Occupied levels must have a physically plausible connection. Determine the
+applicable stairs, ramps, lifts and core arrangement from levels, use and source
+evidence. Do not impose a tower's core on a single-level building, or infer that
+every building needs a lift. A typological expectation guides the reading; it
+does not establish code compliance or replace evidence about this building.
 
-This is a check on the **reading** and a requirement on the **model**. Fitting a
-core into the read plan tests the plan: a footprint that cannot hold one is
-evidence the footprint is wrong, and that is cheap to learn early. Then build it
-— `SKILL.md` R7. A core with no image evidence is `INFERRED` and is placed by
-type (centre for a square tower, offset or end for a slab, sized at roughly
-15–25% of the gross floor plate for an office tower). Its being invisible in the
-reference sets its evidence state; it does not make it optional.
+This is a check on the **reading** and a requirement on the **model**. Where a
+core or circulation route is required, verify that it fits the plan and connects
+the levels, then build it under SKILL.md's common architectural baseline
+(completeness guidance: `strict-review.md` R7). If it is hidden, record the layout
+as INFERRED and state the typological basis. If a particular component is not
+applicable, record the architectural reason; invisibility alone cannot
+be used to omit a required connection.
 
 ### P4. Span plausibility
 An opening in masonry wider than about 4–6 m needs visible transfer — a lintel,
